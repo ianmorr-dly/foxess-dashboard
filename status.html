@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Home Energy — Quick View</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --fg: #eef2f6;
+    --dim: #93a1ad;
+    --charge: #2ecc71;
+    --discharge: #ff5a4e;
+    --idle: #6b7785;
+    --card: #151b22;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); color: var(--fg);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+  }
+  body {
+    display: flex; flex-direction: column;
+    height: 100vh; width: 100vw;
+    padding: 3vh 3vw;
+  }
+  .top {
+    flex: 0 0 auto;
+    display: flex; justify-content: space-between; align-items: baseline;
+    color: var(--dim);
+    font-size: 2.2vh;
+  }
+  .battery-wrap {
+    flex: 1 1 auto;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 2vh;
+    transition: background-color 0.6s ease;
+    margin: 2vh 0;
+  }
+  .battery-pct {
+    font-size: 22vh; font-weight: 700; line-height: 1; letter-spacing: -0.02em;
+  }
+  .battery-pct .unit { font-size: 8vh; font-weight: 400; opacity: 0.7; }
+  .battery-state {
+    font-size: 4.5vh; font-weight: 600; margin-top: 1vh;
+  }
+  .flows {
+    flex: 0 0 auto;
+    display: flex; gap: 3vw;
+  }
+  .flow-card {
+    flex: 1; background: var(--card); border-radius: 1.6vh;
+    padding: 2.5vh 2vw; text-align: center;
+  }
+  .flow-label { font-size: 2.4vh; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; }
+  .flow-value { font-size: 7vh; font-weight: 700; margin-top: 0.5vh; }
+  .flow-value .unit { font-size: 3vh; font-weight: 400; opacity: 0.7; }
+  .net {
+    text-align: center; font-size: 2.6vh; color: var(--dim); margin-top: 1.5vh;
+  }
+  .net strong { color: var(--fg); }
+  .footer {
+    flex: 0 0 auto; text-align: center; color: var(--dim); font-size: 1.8vh; margin-top: 1.5vh;
+  }
+  .footer a { color: var(--dim); }
+  .offline-banner {
+    display: none; text-align: center; color: var(--discharge); font-size: 2vh; margin-top: 1vh;
+  }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div id="stationName">Home Energy</div>
+    <div id="clock"></div>
+  </div>
+
+  <div class="battery-wrap" id="batteryWrap">
+    <div class="battery-pct"><span id="batteryPct">--</span><span class="unit">%</span></div>
+    <div class="battery-state" id="batteryState">Loading…</div>
+  </div>
+
+  <div class="flows">
+    <div class="flow-card">
+      <div class="flow-label">Solar</div>
+      <div class="flow-value"><span id="pvValue">--</span><span class="unit">kW</span></div>
+    </div>
+    <div class="flow-card">
+      <div class="flow-label">House</div>
+      <div class="flow-value"><span id="loadValue">--</span><span class="unit">kW</span></div>
+    </div>
+  </div>
+  <div class="net" id="netLine">&nbsp;</div>
+
+  <div class="footer">
+    Updated <span id="updatedAt">--</span> · full dashboard at <a href="./">index.html</a>
+  </div>
+  <div class="offline-banner" id="offlineBanner">Could not reach the latest data — showing last known values.</div>
+
+  <script>
+    const COLORS = { charge: '#173d28', discharge: '#3d1f1c', idle: '#1a2028' };
+    const REFRESH_MS = 60 * 1000; // how often this page re-checks index.html for fresh data
+
+    function fmt1(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+
+    function render(data) {
+      const snap = data.snapshot;
+      const soc = Math.round(snap.SoC);
+      const battNet = (snap.batChargePower || 0) - (snap.batDischargePower || 0);
+      const pv = snap.pvPower || 0;
+      const load = snap.loadsPower || 0;
+
+      document.getElementById('stationName').textContent = data.station.name || 'Home Energy';
+      document.getElementById('batteryPct').textContent = soc;
+      document.getElementById('pvValue').textContent = fmt1(pv);
+      document.getElementById('loadValue').textContent = fmt1(load);
+
+      const wrap = document.getElementById('batteryWrap');
+      const stateEl = document.getElementById('batteryState');
+      if (battNet > 0.02) {
+        wrap.style.backgroundColor = COLORS.charge;
+        stateEl.textContent = `Charging · ${fmt1(battNet)} kW`;
+        stateEl.style.color = '#2ecc71';
+      } else if (battNet < -0.02) {
+        wrap.style.backgroundColor = COLORS.discharge;
+        stateEl.textContent = `Discharging · ${fmt1(-battNet)} kW`;
+        stateEl.style.color = '#ff5a4e';
+      } else {
+        wrap.style.backgroundColor = COLORS.idle;
+        stateEl.textContent = 'Idle';
+        stateEl.style.color = '#93a1ad';
+      }
+
+      const netLine = document.getElementById('netLine');
+      const diff = pv - load;
+      if (Math.abs(diff) < 0.03) {
+        netLine.innerHTML = 'Solar matching house load';
+      } else if (diff > 0) {
+        netLine.innerHTML = `Solar covering house, <strong>${fmt1(diff)} kW</strong> spare`;
+      } else {
+        netLine.innerHTML = `Drawing an extra <strong>${fmt1(-diff)} kW</strong> beyond solar`;
+      }
+
+      const fetchedAt = new Date(snap.fetchedAt || data.generatedAt);
+      document.getElementById('updatedAt').textContent = fetchedAt.toLocaleString(undefined, {
+        weekday: 'short', hour: '2-digit', minute: '2-digit',
+      });
+      document.getElementById('offlineBanner').style.display = 'none';
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch('./index.html', { cache: 'no-store' });
+        const html = await res.text();
+        const m = html.match(/<script id="dashboard-data" type="application\/json">([\s\S]*?)<\/script>/);
+        if (!m) throw new Error('data block not found');
+        const data = JSON.parse(m[1]);
+        render(data);
+      } catch (e) {
+        document.getElementById('offlineBanner').style.display = 'block';
+      }
+    }
+
+    function tickClock() {
+      document.getElementById('clock').textContent = new Date().toLocaleTimeString(undefined, {
+        hour: '2-digit', minute: '2-digit',
+      });
+    }
+
+    tickClock();
+    setInterval(tickClock, 15000);
+    refresh();
+    setInterval(refresh, REFRESH_MS);
+
+    // --- best-effort "keep the screen open" nudge for kiosk-style displays
+    // (e.g. an Echo Show 15's Silk browser, which returns to the home
+    // screen after a period of inactivity). This can't fake real hardware
+    // input, so it isn't guaranteed to work on every device/firmware, but
+    // silent looped audio is known to keep some Fire OS screens awake.
+    (function keepAwake() {
+      const audio = document.createElement('audio');
+      audio.loop = true;
+      audio.setAttribute('playsinline', '');
+      audio.src = 'data:audio/wav;base64,UklGRiQAAAAWQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+      document.body.appendChild(audio);
+      const tryPlay = () => audio.play().catch(() => {});
+      tryPlay();
+      document.addEventListener('click', tryPlay, { once: true });
+      document.addEventListener('touchstart', tryPlay, { once: true });
+    })();
+  </script>
+</body>
+</html>
