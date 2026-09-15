@@ -1,0 +1,47 @@
+name: Quick refresh (snapshot only)
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 minutes
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-dashboard   # same group as the hourly refresh, so the two never run at once
+  cancel-in-progress: false
+
+jobs:
+  quick-refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Fetch live snapshot and patch index.html
+        env:
+          FOXESS_API_KEY: ${{ secrets.FOXESS_API_KEY }}
+          FOXESS_DEVICE_SN: ${{ secrets.FOXESS_DEVICE_SN }}
+        run: python scripts/quick_refresh.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "foxess-dashboard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Quick refresh: live snapshot"
+            git pull --rebase origin main
+            git push
+          fi
