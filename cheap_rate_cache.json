@@ -1,0 +1,122 @@
+{
+  "2026-08-16": {
+    "gridCheap": 3.0,
+    "gridPeak": 0.1
+  },
+  "2026-08-17": {
+    "gridCheap": 2.5,
+    "gridPeak": 0.1
+  },
+  "2026-08-18": {
+    "gridCheap": 1.9,
+    "gridPeak": 0.1
+  },
+  "2026-08-19": {
+    "gridCheap": 1.8,
+    "gridPeak": 0.2
+  },
+  "2026-08-20": {
+    "gridCheap": 2.0,
+    "gridPeak": 0.1
+  },
+  "2026-08-21": {
+    "gridCheap": 1.6,
+    "gridPeak": 0.2
+  },
+  "2026-08-22": {
+    "gridCheap": 2.5,
+    "gridPeak": 0.1
+  },
+  "2026-08-23": {
+    "gridCheap": 2.7,
+    "gridPeak": 0.1
+  },
+  "2026-08-24": {
+    "gridCheap": 2.2,
+    "gridPeak": 0.1
+  },
+  "2026-08-25": {
+    "gridCheap": 1.7,
+    "gridPeak": 0.1
+  },
+  "2026-08-26": {
+    "gridCheap": 1.6,
+    "gridPeak": 0
+  },
+  "2026-08-27": {
+    "gridCheap": 1.4,
+    "gridPeak": 0.1
+  },
+  "2026-08-28": {
+    "gridCheap": 1.5,
+    "gridPeak": 0.1
+  },
+  "2026-08-29": {
+    "gridCheap": 1.7,
+    "gridPeak": 0.1
+  },
+  "2026-08-30": {
+    "gridCheap": 1.7,
+    "gridPeak": 0.1
+  },
+  "2026-08-31": {
+    "gridCheap": 1.4,
+    "gridPeak": 0.1
+  },
+  "2026-09-01": {
+    "gridCheap": 1.6,
+    "gridPeak": 0.1
+  },
+  "2026-09-02": {
+    "gridCheap": 2.0,
+    "gridPeak": 0.2
+  },
+  "2026-09-03": {
+    "gridCheap": 1.8,
+    "gridPeak": 0.1
+  },
+  "2026-09-04": {
+    "gridCheap": 1.7,
+    "gridPeak": 0.1
+  },
+  "2026-09-05": {
+    "gridCheap": 2.0,
+    "gridPeak": 0.1
+  },
+  "2026-09-06": {
+    "gridCheap": 2.3,
+    "gridPeak": 0.1
+  },
+  "2026-09-07": {
+    "gridCheap": 1.5,
+    "gridPeak": 0.1
+  },
+  "2026-09-08": {
+    "gridCheap": 2.0,
+    "gridPeak": 0
+  },
+  "2026-09-09": {
+    "gridCheap": 1.7,
+    "gridPeak": 0.1
+  },
+  "2026-09-10": {
+    "gridCheap": 2.1,
+    "gridPeak": 0.1
+  },
+  "2026-09-11": {
+    "gridCheap": 2.9,
+    "gridPeak": 0.2
+  },
+  "2026-09-12": {
+    "gridCheap": 8.5,
+    "gridPeak": 0.3
+  },
+  "2026-09-13": {
+    "gridCheap": 4.4,
+    "gridPeak": 0.4
+  },
+  "2026-09-14": {
+    "gridCheap": 2.3,
+    "gridPeak": 0.1
+  }
+}
