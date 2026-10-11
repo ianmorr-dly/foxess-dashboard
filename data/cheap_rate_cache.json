@@ -222,5 +222,9 @@
   "2026-10-11": {
     "gridCheap": 1.2,
     "gridPeak": 0.1
+  },
+  "2026-10-12": {
+    "gridCheap": 2.9,
+    "gridPeak": 0.2
   }
 }
