@@ -1,8 +1,4 @@
 {
-  "2026-08-28": {
-    "gridCheap": 1.4,
-    "gridPeak": 0.1
-  },
   "2026-08-29": {
     "gridCheap": 1.5,
     "gridPeak": 0.1
@@ -242,5 +238,9 @@
   "2026-10-27": {
     "gridCheap": 6.7,
     "gridPeak": 0.4
+  },
+  "2026-10-28": {
+    "gridCheap": 5.1,
+    "gridPeak": 0.2
   }
 }
